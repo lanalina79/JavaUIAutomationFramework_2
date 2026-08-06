@@ -1,29 +1,36 @@
 package online.opencart_automation.pageobjects;
 
-import online.opencart_automation.managers.DataGeneratorManager;
 import online.opencart_automation.utils.BrowserUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class SignUpLoginPage extends Page {
+import java.time.Duration;
 
-    public SignUpLoginPage(WebDriver driver)
+public class LoginPage extends Page {
+
+    public LoginPage(WebDriver driver)
     {super(driver);}
 
-    @FindBy (xpath = "//input[@placeholder='Name']")
+    @FindBy (name = "username")
     private WebElement usernameInput;
 
-    @FindBy (css = "input[data-qa='signup-email']")
-    private WebElement emailInput;
+    @FindBy (name = "password")
+    private WebElement passwordInput;
 
-    public void CompleteInitialDataSignUp(String username, String email){
+
+    public void CompleteLogin(String username, String password){
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        wait.until(ExpectedConditions.visibilityOf(usernameInput));
         usernameInput.sendKeys(username);
-        emailInput.sendKeys(email);
-        BrowserUtils.safeClick(driver,By.cssSelector("button[data-qa='signup-button']"));
-        System.out.println("The form was populated with username "+ username +" and email " +email);
-        System.out.println("The SignUp button was clicked");
+        passwordInput.sendKeys(password);
+        BrowserUtils.scrollAndClickButton(driver,By.cssSelector("button[type='submit']"));
+        System.out.println("The form was populated with username "+ username +" and password " +password);
+        System.out.println("The Login button was clicked");
     }
 
     /*WebElement usernameInput = driver.findElement(By.xpath("//input[@placeholder='Name']"));

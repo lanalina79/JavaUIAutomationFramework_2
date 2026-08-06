@@ -17,5 +17,25 @@ public class DataGeneratorManager {
         return faker.internet().password(min,max);
     }
 
+    public static String getRandomFirstName(){
+        return  faker.name().firstName();
+    }
+    public static String getRandomLastName(){
+        return  faker.name().lastName();
+    }
+
+    public static String getRandomMiddleName(){
+        return  faker.name().name();
+    }
+
+    public  static String getRandomNotes(){
+        return getRandomFirstName();
+    }
+
+    public  static String getRandomKeyword(){
+        return getRandomFirstName();
+    }
+
+
 
 }

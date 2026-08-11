@@ -41,6 +41,18 @@ public class CandidateCreatedPage extends Page {
 
 
     }
+
+    public boolean isCandidateNameDisplayed(){
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.urlMatches(".*/recruitment/addCandidate/\\d+$"));
+        WebElement candidateName=wait.until(ExpectedConditions.visibilityOfElementLocated(createdCandidateName));
+        boolean actualBooleanName = candidateName.isDisplayed();
+        if(actualBooleanName){
+            System.out.println("Candidate is registered with the name " +candidateName.getText().trim());
+        }
+        return actualBooleanName;
+    }
 }
 
 

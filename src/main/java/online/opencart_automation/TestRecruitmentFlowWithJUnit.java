@@ -3,62 +3,121 @@ package online.opencart_automation;
 import online.opencart_automation.managers.DataGeneratorManager;
 import online.opencart_automation.managers.DriverManager;
 import online.opencart_automation.pageobjects.*;
+import org.junit.jupiter.api.*;
 import org.openqa.selenium.WebDriver;
 
 public class TestRecruitmentFlowWithJUnit {
-    public static void main(String[] args) throws InterruptedException {
+    static WebDriver driver;
+    LoginPage loginPage;
+    DashboardPage dashboardPage;
+    RecruitmentPage recruitmentPage;
+    private static final String  emptyLastName="";
 
-        WebDriver driver = DriverManager.getInstance().getDriver();
+
+    @BeforeEach
+    public void executeTheCodeBeforeEachTest() throws InterruptedException {
+        driver = DriverManager.getInstance().getDriver();
 
         driver.get("http://172.23.176.163:8200/web/index.php/auth/login");
-        LoginPage loginPage=new LoginPage(driver);
-        loginPage.CompleteLogin("Elena","Elena1122!");
+        loginPage = new LoginPage(driver);
+        loginPage.CompleteLogin("Elena", "Elena1122!");
 
         Thread.sleep(5000);
 
-        DashboardPage dashboardPage=new DashboardPage(driver);
+        dashboardPage = new DashboardPage(driver);
         dashboardPage.clickRecruitmentButton();
 
 
-        RecruitmentPage recruitmentPage= new RecruitmentPage(driver);
+        recruitmentPage = new RecruitmentPage(driver);
         Thread.sleep(3000);
         recruitmentPage.clickAddNewRecruitmentButton();
         Thread.sleep(3000);
 
-        AddCandidatePage addCandidatePage=new AddCandidatePage(driver);
-        addCandidatePage.textFieldInput(DataGeneratorManager.getRandomFirstName(),DataGeneratorManager.getRandomMiddleName(),
-                DataGeneratorManager.getRandomLastName(),DataGeneratorManager.getRandomEmail(),
+    }
+
+    @Test
+    @Disabled
+    @DisplayName("Add a candidate with JUnit")
+    public void addCandidate() throws InterruptedException {
+        AddCandidatePage addCandidatePage = new AddCandidatePage(driver);
+        addCandidatePage.textFieldInput(DataGeneratorManager.getRandomFirstName(), DataGeneratorManager.getRandomMiddleName(),
+                DataGeneratorManager.getRandomLastName(), DataGeneratorManager.getRandomEmail(),
                 DataGeneratorManager.getRandomKeyword(), DataGeneratorManager.getRandomNotes());
         addCandidatePage.selectVacancy("Tester");
-        addCandidatePage.pickTheDate("June","2026","10");
+        addCandidatePage.pickTheDate("June", "2026", "10");
         addCandidatePage.checkConsent();
 
         addCandidatePage.clickSaveRecruiterButton();
+        CandidateCreatedPage candidateCreatedPage = new CandidateCreatedPage(driver);
+
+        Assertions.assertTrue(candidateCreatedPage.isCandidateNameDisplayed(),"The name is displayed");
+        Thread.sleep(10000);
+
+    }
+
+    @Test
+    @Disabled
+    @DisplayName("Validate Last Name Error")
+    public void validateEmptyLastNameError() throws InterruptedException {
+        AddCandidatePage addCandidatePage = new AddCandidatePage(driver);
+        addCandidatePage.textFieldInput(DataGeneratorManager.getRandomFirstName(), DataGeneratorManager.getRandomMiddleName(),
+                emptyLastName, DataGeneratorManager.getRandomEmail(),
+                DataGeneratorManager.getRandomKeyword(), DataGeneratorManager.getRandomNotes());
+        addCandidatePage.selectVacancy("Tester");
+        addCandidatePage.pickTheDate("June", "2026", "10");
+        addCandidatePage.checkConsent();
+
+        addCandidatePage.clickSaveRecruiterButton();
+        boolean isLastNameErrorDisplayed = addCandidatePage.isLastNameErrorMessageDisplayed();
+        Assertions.assertTrue(isLastNameErrorDisplayed,"The Last Name is required");
+        Thread.sleep(10000);
+
+    }
+
+    @Test
+    @Disabled
+    @DisplayName("Validate FirstName is not empty")
+    public void validateFirstNameIsNotEmpty() throws InterruptedException {
+        AddCandidatePage addCandidatePage = new AddCandidatePage(driver);
+        addCandidatePage.textFieldInput(DataGeneratorManager.getRandomFirstName(), DataGeneratorManager.getRandomMiddleName(),
+                DataGeneratorManager.getRandomLastName(), DataGeneratorManager.getRandomEmail(),
+                DataGeneratorManager.getRandomKeyword(), DataGeneratorManager.getRandomNotes());
+        addCandidatePage.selectVacancy("Tester");
+        addCandidatePage.pickTheDate("June", "2026", "10");
+        addCandidatePage.checkConsent();
+        String actualFirstName = addCandidatePage.getActualFirstName();
+        System.out.println("actualFirstName "+ actualFirstName);
+        Assertions.assertNotEquals("",actualFirstName,"First name should not be empty");
+        //addCandidatePage.clickSaveRecruiterButton();
+
+         Thread.sleep(10000);
 
 
-        CandidateCreatedPage candidateCreatedPage=new CandidateCreatedPage(driver);
-        candidateCreatedPage.checkCandidateRegistration();
 
 
+    }
 
+    @Test
+    @DisplayName("When entering valid email error is NOT be displayed")
+    public void validateEmailFormat() throws InterruptedException {
+        AddCandidatePage addCandidatePage = new AddCandidatePage(driver);
+        addCandidatePage.textFieldInput(DataGeneratorManager.getRandomFirstName(), DataGeneratorManager.getRandomMiddleName(),
+                DataGeneratorManager.getRandomLastName(), DataGeneratorManager.getRandomEmail(),
+                DataGeneratorManager.getRandomKeyword(), DataGeneratorManager.getRandomNotes());
+        addCandidatePage.selectVacancy("Tester");
+        addCandidatePage.pickTheDate("June", "2026", "10");
+        addCandidatePage.checkConsent();
+        Boolean isEmailErrorMessageDisplayed = addCandidatePage.isEmailErrorDisplayed();
+        Assertions.assertFalse(isEmailErrorMessageDisplayed,"The invalid email format error should NOT be displayed");
+        //addCandidatePage.clickSaveRecruiterButton();
 
+        Thread.sleep(10000);}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        driver.quit();
+    @AfterEach
+    public void executeCodeAfterEachTest() {
+        DriverManager.getInstance().tearDownForBrowser();
         System.out.println("The test is finished and the driver is closed");
     }
+
 
 }

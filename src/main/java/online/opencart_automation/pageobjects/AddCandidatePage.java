@@ -38,6 +38,12 @@ public class AddCandidatePage extends Page {
     @FindBy(xpath = "//input[@placeholder='yyyy-mm-dd']")
     private WebElement calendarView;
 
+    @FindBy(xpath = "//span[@class='oxd-text oxd-text--span oxd-input-field-error-message oxd-input-group__message']")
+    private WebElement lastNameError;
+
+    @FindBy(xpath = "//span[@class='oxd-text oxd-text--span oxd-input-field-error-message oxd-input-group__message']")
+    private WebElement emailError;
+
     public void textFieldInput(String firstName, String middleName, String lastName, String email, String keywords,
                                String notes) {
         firstNameInput.sendKeys(firstName);
@@ -49,6 +55,11 @@ public class AddCandidatePage extends Page {
 
         System.out.println(firstName + " " + middleName + " " + lastName);
 
+    }
+
+    public String getActualFirstName (){
+       String actualFName= firstNameInput.getAttribute("value");
+       return actualFName;
     }
 
 
@@ -108,6 +119,29 @@ public class AddCandidatePage extends Page {
 
     public void clickSaveRecruiterButton() {
         BrowserUtils.scrollAndClickButton(driver, By.xpath("//button[normalize-space()='Save']"));
+    }
+
+    public boolean isLastNameErrorMessageDisplayed(){
+        System.out.println("the text is " + lastNameError.getText());
+        return lastNameError.isDisplayed();
+
+    }
+
+    public boolean isEmailErrorDisplayed (){
+        try {
+
+            boolean emailErrorDisplayed = emailError.isDisplayed();
+            if (emailErrorDisplayed) {
+                System.out.println("The error message " + emailError.getText() + " is displayed");
+            } else {
+                System.out.println("The error message is NOT displayed");
+            }
+            return emailErrorDisplayed;
+        }
+        catch(NoSuchElementException e){
+            System.out.println("The error message is NOT displayed");
+            return false;
+        }
     }
 
 

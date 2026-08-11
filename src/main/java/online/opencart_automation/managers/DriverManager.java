@@ -42,6 +42,14 @@ public class DriverManager {
         return driver;
     }
 
+    public void tearDownForBrowser(){
+        driver.quit();
+        driver=null;
+        instance=null;
+        System.out.println("The driver was reset to null as instance was");
+
+    }
+
 
 
 }
